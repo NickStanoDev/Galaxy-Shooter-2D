@@ -13,10 +13,14 @@ public class Enemy : MonoBehaviour
     private AudioSource _audioSource;
     private float _fireRate = 3.0f;
     private float _canFire = -1;
+    private bool _isAlive = true;
 
     
     void Start()
     {
+
+        _isAlive = true;
+        
         _player = GameObject.Find("Player").GetComponent<Player>();
         _audioSource = GetComponent<AudioSource>();
        
@@ -31,13 +35,14 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("The Animator is NULL.");
         }
+        _anim.ResetTrigger("OnEnemyDeath");
 
     }
         
         void Update()
         {
         CalculateMovment();
-        if(Time.time > _canFire)
+        if(Time.time > _canFire && _isAlive)
         {
             _fireRate = Random.Range(3f, 7f);
             _canFire = Time.time + _fireRate;
@@ -84,6 +89,7 @@ public class Enemy : MonoBehaviour
                 }
             
             _anim.SetTrigger("OnEnemyDeath");
+            _isAlive = false;
             _speed = 0;
             _audioSource.Play();
             Destroy(this.gameObject, 2.8f);
@@ -102,6 +108,7 @@ public class Enemy : MonoBehaviour
                 }
 
             _anim.SetTrigger("OnEnemyDeath");
+            _isAlive = false;
             _speed = 0;
             _audioSource.Play();
             Destroy(GetComponent<Collider2D>());

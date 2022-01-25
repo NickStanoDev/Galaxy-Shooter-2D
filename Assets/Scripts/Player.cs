@@ -32,12 +32,21 @@ public class Player : MonoBehaviour
     private AudioClip _laserSoundClip;
    [SerializeField]
     private AudioSource _audioSource;
+    [SerializeField]
+    private float _shiftSpeed = 15f;
+    //prefab for shield
+    [SerializeField]
+    private GameObject _shield;
+    [SerializeField]
+    private Shield _shieldBehavior;
 
 
 
 
     private void Start()
     {
+
+        
         //get access to the SpawnManager script
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
@@ -79,19 +88,18 @@ public class Player : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
 
-        // new Vector3(1, 0, 0) * 1 * 3.5f * real time
-        // transform.Translate(Vector3.right * horizontalInput * _speed * Time.deltaTime);
-        //transform.Translate(Vector3.up * verticalInput * _speed * Time.deltaTime)
+        
         transform.Translate(direction * _speed * Time.deltaTime);
+
+        if (Input.GetKey(KeyCode.LeftShift))
+            {
+            transform.Translate(direction * _shiftSpeed * Time.deltaTime);
+        }
+
+
     
 
 
-        //if player position on the y is greater than 0
-        //y position = 0
-        //else if position on the y is less than -3.8f
-        //y pos = -3.8f
-        //can use Mathf.Clamp to clamp it all into one line of code
-        //this is to stop you from going past a certain point on the screen vertically
 
         if (transform.position.y >= 0)
         {
@@ -103,11 +111,6 @@ public class Player : MonoBehaviour
             transform.position = new Vector3(transform.position.x, -3.8f, 0);
         }
 
-        //if player on the x is > 11.3f
-        //x pos = -11.3f
-        //else if player on the x is less than -11.3f
-        //x pos = 11.3f
-        //this is to loop you to the other side of the x Axis when you hit a certain point on the screen
 
         if (transform.position.x > 11.3f)
         {
@@ -121,18 +124,7 @@ public class Player : MonoBehaviour
 
     void FireLaser()
     {
-        //if i hit the space key
-        //spawn gameObject
-        //Instantiate creates an object from a prefab
-        //we want the laser to spawn at the players position with transform.position, while being 0.8f above the player so the Laser looks like it is coming out of our player more realistically
-        //by adding the position to a Vector3 (offset of 0.8 for every Laser)
-        //no desired rotation = Quaternion.identity
-        //time.time is how long the game has been running
-        //&& chains multiple conditions together
-        //if space key press fire 1 laser
-        //if triple shot active true
-        //fire 3 lasers
-        //else fire 1 laser
+      
 
         {
             _canFire = Time.time + _fireRate;
@@ -156,17 +148,16 @@ public class Player : MonoBehaviour
        
 
     }
-    //Public methods can be called from outside this script
+  
     public void Damage()
     {
-        //if sheilds is active
-        //do nothing
-        //deactivate shields
-        //return; stops a method
+      
         if(_isShieldActive == true)
         {
-            _isShieldActive = false;
-            _shieldVisualizer.SetActive(false);
+             _shieldBehavior.DamageShield();
+
+
+            //_shieldVisualizer.SetActive(false); 
             return;
         }
 
@@ -176,10 +167,7 @@ public class Player : MonoBehaviour
         _lives--;
 
 
-        //if lives is 2
-        //enable left engine
-        //else if lives is 1
-        //enable right engine
+      
         if (_lives == 2)
         {
             _leftEngine.SetActive(true);
@@ -205,15 +193,13 @@ public class Player : MonoBehaviour
 
     public void TripleShotActive()
     {
-        //tripleshotactive becomes true
+       
         _isTripleShotActive = true;
         StartCoroutine(TripleShotPowerDownRoutine());
 
     }
 
-    //IEnumerator TripleShotPowerDownRoutine
-    //wait 5 seconds
-    //set the triple shot to false
+   
     IEnumerator TripleShotPowerDownRoutine()
     {
         yield return new WaitForSeconds(5.0f);
@@ -245,6 +231,12 @@ public class Player : MonoBehaviour
         _score += points;
         _uiManager.UpdateScore(_score);
     }    
+
+    public void ShutDownShield()
+    {
+        _isShieldActive = false;
+        _shieldVisualizer.SetActive(false);
+    }
 
 }
 

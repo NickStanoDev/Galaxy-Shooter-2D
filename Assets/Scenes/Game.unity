@@ -367,6 +367,9 @@ MonoBehaviour:
   _score: 0
   _laserSoundClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _audioSource: {fileID: 147570947}
+  _shiftSpeed: 15
+  _shield: {fileID: 1088129724}
+  _shieldBehavior: {fileID: 1088129728}
 --- !u!212 &147570944
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1040,6 +1043,7 @@ GameObject:
   - component: {fileID: 1088129726}
   - component: {fileID: 1088129725}
   - component: {fileID: 1088129727}
+  - component: {fileID: 1088129728}
   m_Layer: 0
   m_Name: Shields
   m_TagString: Untagged
@@ -1131,6 +1135,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1088129728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1088129724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 562f1de0f42644c4fbddbd5529fa25e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _resistance: 3
 --- !u!1 &1119963789
 GameObject:
   m_ObjectHideFlags: 0
