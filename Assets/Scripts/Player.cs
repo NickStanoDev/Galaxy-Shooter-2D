@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     private UIManager _uiManager;
     [SerializeField]
     private AudioClip _laserSoundClip;
-   [SerializeField]
+    [SerializeField]
     private AudioSource _audioSource;
     [SerializeField]
     private float _shiftSpeed = 15f;
@@ -39,6 +39,10 @@ public class Player : MonoBehaviour
     private GameObject _shield;
     [SerializeField]
     private Shield _shieldBehavior;
+    [SerializeField]
+    public int _ammoCount = 15;
+    [SerializeField]
+    AudioClip _noAmmoSound;
 
 
 
@@ -46,7 +50,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
 
-        
+
         //get access to the SpawnManager script
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
@@ -68,7 +72,7 @@ public class Player : MonoBehaviour
         {
             _audioSource.clip = _laserSoundClip;
         }
-    
+
     }
 
 
@@ -79,166 +83,187 @@ public class Player : MonoBehaviour
         CalculateMovement();
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+        {
+            if (_ammoCount == 0)
+            {
+                AudioSource.PlayClipAtPoint(_noAmmoSound, transform.position);
+                return;
+            }
+
+
             FireLaser();
-    }
+        }
 
-    void CalculateMovement()
-    {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-        Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
 
-        
-        transform.Translate(direction * _speed * Time.deltaTime);
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        }
+
+        void CalculateMovement()
+        {
+            float horizontalInput = Input.GetAxis("Horizontal");
+            float verticalInput = Input.GetAxis("Vertical");
+            Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
+
+
+            transform.Translate(direction * _speed * Time.deltaTime);
+
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-            transform.Translate(direction * _shiftSpeed * Time.deltaTime);
-        }
-
-
-    
-
-
-
-        if (transform.position.y >= 0)
-        {
-            transform.position = new Vector3(transform.position.x, 0, 0);
-        }
-        else if (transform.position.y <= -3.8f)
-        {
-
-            transform.position = new Vector3(transform.position.x, -3.8f, 0);
-        }
-
-
-        if (transform.position.x > 11.3f)
-        {
-            transform.position = new Vector3(-11.3f, transform.position.y, 0);
-        }
-        else if (transform.position.x < -11.3f)
-        {
-            transform.position = new Vector3(11.3f, transform.position.y, 0);
-        }
-    }
-
-    void FireLaser()
-    {
-      
-
-        {
-            _canFire = Time.time + _fireRate;
-
-            if (_isTripleShotActive == true)
-            {
-                Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+                transform.Translate(direction * _shiftSpeed * Time.deltaTime);
             }
 
 
-            else
+
+
+
+
+            if (transform.position.y >= 0)
             {
-                Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+                transform.position = new Vector3(transform.position.x, 0, 0);
+            }
+            else if (transform.position.y <= -3.8f)
+            {
+
+                transform.position = new Vector3(transform.position.x, -3.8f, 0);
             }
 
-            _audioSource.Play();
 
-             }
-
-
-       
-
-    }
-  
-    public void Damage()
-    {
-      
-        if(_isShieldActive == true)
-        {
-             _shieldBehavior.DamageShield();
-
-
-            //_shieldVisualizer.SetActive(false); 
-            return;
+            if (transform.position.x > 11.3f)
+            {
+                transform.position = new Vector3(-11.3f, transform.position.y, 0);
+            }
+            else if (transform.position.x < -11.3f)
+            {
+                transform.position = new Vector3(11.3f, transform.position.y, 0);
+            }
         }
 
-     
-
-
-        _lives--;
-
-
-      
-        if (_lives == 2)
+        void FireLaser()
         {
-            _leftEngine.SetActive(true);
-        }    
-        else if (_lives == 1)
-        {
-            _rightEngine.SetActive(true);
-        }    
 
 
-        _uiManager.UpdateLives(_lives);
+            {
+                AmmoCount(-1);
+                _canFire = Time.time + _fireRate;
 
-       
+                if (_isTripleShotActive == true)
+                {
+                    Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+                }
 
-        if (_lives < 1)
-        {
-            _spawnManager.OnPlayerDeath();
+
+                else
+                {
+                    Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+                }
+
+                _audioSource.Play();
+
+            }
 
 
-            Destroy(this.gameObject);
+
+
         }
+
+        public void Damage()
+        {
+
+            if (_isShieldActive == true)
+            {
+                _shieldBehavior.DamageShield();
+
+
+                //_shieldVisualizer.SetActive(false); 
+                return;
+            }
+
+
+
+
+            _lives--;
+
+
+
+            if (_lives == 2)
+            {
+                _leftEngine.SetActive(true);
+            }
+            else if (_lives == 1)
+            {
+                _rightEngine.SetActive(true);
+            }
+
+
+            _uiManager.UpdateLives(_lives);
+
+
+
+            if (_lives < 1)
+            {
+                _spawnManager.OnPlayerDeath();
+
+
+                Destroy(this.gameObject);
+            }
+        }
+
+        public void TripleShotActive()
+        {
+
+            _isTripleShotActive = true;
+            StartCoroutine(TripleShotPowerDownRoutine());
+
+        }
+
+
+        IEnumerator TripleShotPowerDownRoutine()
+        {
+            yield return new WaitForSeconds(5.0f);
+            _isTripleShotActive = false;
+        }
+
+        public void SpeedBoostActive()
+        {
+            _isSpeedBoostActive = true;
+            _speed *= _speedMultiplier;
+            StartCoroutine(SpeedBoostPowerDownRoutive());
+        }
+
+        IEnumerator SpeedBoostPowerDownRoutive()
+        {
+            yield return new WaitForSeconds(5.0f);
+            _isSpeedBoostActive = false;
+            _speed /= _speedMultiplier;
+        }
+
+        public void ShieldsActive()
+        {
+            _isShieldActive = true;
+            _shieldVisualizer.SetActive(true);
+        }
+
+        public void AddScore(int points)
+        {
+            _score += points;
+            _uiManager.UpdateScore(_score);
+        }
+
+        public void ShutDownShield()
+        {
+            _isShieldActive = false;
+            _shieldVisualizer.SetActive(false);
+        }
+
+        public void AmmoCount(int bullets)
+        {
+            _ammoCount += bullets;
+        _uiManager.updateAmmoCount(_ammoCount);
+        }
+
     }
 
-    public void TripleShotActive()
-    {
-       
-        _isTripleShotActive = true;
-        StartCoroutine(TripleShotPowerDownRoutine());
 
-    }
-
-   
-    IEnumerator TripleShotPowerDownRoutine()
-    {
-        yield return new WaitForSeconds(5.0f);
-        _isTripleShotActive = false;
-    }
-
-    public void SpeedBoostActive()
-    {
-        _isSpeedBoostActive = true;
-        _speed *= _speedMultiplier;
-        StartCoroutine(SpeedBoostPowerDownRoutive());
-    }
-
-    IEnumerator SpeedBoostPowerDownRoutive()
-    {
-        yield return new WaitForSeconds(5.0f);
-        _isSpeedBoostActive = false;
-        _speed /= _speedMultiplier;
-    }
-
-    public void ShieldsActive()
-    {
-        _isShieldActive = true;
-        _shieldVisualizer.SetActive(true);
-    }
-   
-    public void AddScore(int points)
-    {
-        _score += points;
-        _uiManager.UpdateScore(_score);
-    }    
-
-    public void ShutDownShield()
-    {
-        _isShieldActive = false;
-        _shieldVisualizer.SetActive(false);
-    }
-
-}
 
 
 
