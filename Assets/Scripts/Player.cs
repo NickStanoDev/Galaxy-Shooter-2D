@@ -40,7 +40,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private Shield _shieldBehavior;
     [SerializeField]
-    public int _ammoCount = 15;
+    public int _maxAmmo = 15;
     [SerializeField]
     AudioClip _noAmmoSound;
 
@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            if (_ammoCount == 0)
+            if (_maxAmmo == 0)
             {
                 AudioSource.PlayClipAtPoint(_noAmmoSound, transform.position);
                 return;
@@ -257,8 +257,16 @@ public class Player : MonoBehaviour
 
         public void AmmoCount(int bullets)
         {
-            _ammoCount += bullets;
-        _uiManager.updateAmmoCount(_ammoCount);
+            if(bullets >= _maxAmmo)
+        {
+            _maxAmmo = 15;
+        }
+        else
+        {
+            _maxAmmo += bullets;
+        }
+       
+         _uiManager.updateAmmoCount(_maxAmmo);
         }
 
     }

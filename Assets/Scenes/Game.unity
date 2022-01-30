@@ -370,7 +370,7 @@ MonoBehaviour:
   _shiftSpeed: 15
   _shield: {fileID: 1088129724}
   _shieldBehavior: {fileID: 1088129728}
-  _ammoCount: 15
+  _maxAmmo: 15
   _noAmmoSound: {fileID: 8300000, guid: 7656181f9576bbf4a9b72c6db039f494, type: 3}
 --- !u!212 &147570944
 SpriteRenderer:
@@ -1502,6 +1502,7 @@ MonoBehaviour:
   - {fileID: 3346788546869951192, guid: 0eb54f201c494c44589d6e446d6e368f, type: 3}
   - {fileID: 3208727337826914876, guid: b9469073ee223d44a856721ba79893ee, type: 3}
   - {fileID: 8754710240035087750, guid: 2e79340d03a1a554c9c1c89f4cef1f40, type: 3}
+  - {fileID: 7199764702872588421, guid: e0b9e88744e58d441a5919768a847e96, type: 3}
 --- !u!4 &1381940174
 Transform:
   m_ObjectHideFlags: 0
