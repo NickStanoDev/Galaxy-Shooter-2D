@@ -269,6 +269,15 @@ public class Player : MonoBehaviour
          _uiManager.updateAmmoCount(_maxAmmo);
         }
 
+    public void restoreHealth()
+    {
+        _lives = 3;
+        _uiManager.UpdateLives(_lives);
+        _rightEngine.SetActive(false);
+        _leftEngine.SetActive(false);
+
+    }
+
     }
 
 
