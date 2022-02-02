@@ -19,6 +19,8 @@ public class UIManager : MonoBehaviour
     private GameManager _gameManager;
     [SerializeField]
     private Text _ammoText;
+    [SerializeField]
+    
 
 
 
@@ -81,6 +83,8 @@ public class UIManager : MonoBehaviour
     {
         _ammoText.text ="Ammo Count " + playerAmmo.ToString();
     }
+
+    
 
 }
 

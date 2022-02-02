@@ -43,6 +43,10 @@ public class Player : MonoBehaviour
     public int _maxAmmo = 15;
     [SerializeField]
     AudioClip _noAmmoSound;
+    //Camera Shake Reference
+    private CameraShake _camShake;
+  
+    
 
 
 
@@ -51,7 +55,7 @@ public class Player : MonoBehaviour
     {
 
 
-        //get access to the SpawnManager script
+        _camShake = Camera.main.GetComponent<CameraShake>();
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _audioSource = GetComponent<AudioSource>();
@@ -71,6 +75,10 @@ public class Player : MonoBehaviour
         else
         {
             _audioSource.clip = _laserSoundClip;
+        }
+        if(_camShake is null)
+        {
+            Debug.LogError("ShakeCamera script is NULL.");
         }
 
     }
@@ -169,7 +177,9 @@ public class Player : MonoBehaviour
         public void Damage()
         {
 
-            if (_isShieldActive == true)
+        StartCoroutine(_camShake.ShakeCamera());
+        
+        if (_isShieldActive == true)
             {
                 _shieldBehavior.DamageShield();
 
@@ -277,6 +287,15 @@ public class Player : MonoBehaviour
         _leftEngine.SetActive(false);
 
     }
+
+  
+    
+    
+    
+    
+    
+
+   
 
     }
 
