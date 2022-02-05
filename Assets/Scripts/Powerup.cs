@@ -65,6 +65,12 @@ public class Powerup : MonoBehaviour
                     case 4:
                         player.restoreHealth();
                         break;
+                    case 5:
+                        player.LaserBeamActive();
+                        break;
+                    case 6:
+                        player.NegativeSpeed();
+                            break;
                     default:
                         Debug.Log("Default Value");
                         break;
@@ -77,5 +83,8 @@ public class Powerup : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
-}
+
+   
+    }
+
 

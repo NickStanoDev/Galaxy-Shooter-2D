@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _ammoText;
     [SerializeField]
+    private Slider _thrusterSlider;
     
 
 
@@ -27,7 +28,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _ammoText.text = "Ammo Count" + 15;
+        _ammoText.text = "Ammo: " + 15 + "/15";
 
         //assign text component to the handle
         _scoreText.text = "Score:" + 0;
@@ -81,8 +82,17 @@ public class UIManager : MonoBehaviour
 
     public void updateAmmoCount(int playerAmmo)
     {
-        _ammoText.text ="Ammo Count " + playerAmmo.ToString();
+        _ammoText.text = "Ammo: " + playerAmmo + "/15";
     }
+
+    public void ThrusterValue( float thrusterpower)
+    {
+        _thrusterSlider.value = thrusterpower;
+    }
+
+   
+
+
 
     
 

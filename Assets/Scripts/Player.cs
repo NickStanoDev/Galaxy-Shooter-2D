@@ -45,7 +45,12 @@ public class Player : MonoBehaviour
     AudioClip _noAmmoSound;
     //Camera Shake Reference
     private CameraShake _camShake;
-  
+    [SerializeField]
+    private GameObject _laserBeam;
+    private bool _isThrusting = false;
+    private float _thrusterPower = 100.0f;
+    private bool _canThrust = true;
+    
     
 
 
@@ -81,6 +86,8 @@ public class Player : MonoBehaviour
             Debug.LogError("ShakeCamera script is NULL.");
         }
 
+        StartCoroutine(ThrustPower());
+
     }
 
 
@@ -91,7 +98,8 @@ public class Player : MonoBehaviour
         CalculateMovement();
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
-        {
+          
+            {
             if (_maxAmmo == 0)
             {
                 AudioSource.PlayClipAtPoint(_noAmmoSound, transform.position);
@@ -100,6 +108,7 @@ public class Player : MonoBehaviour
 
 
             FireLaser();
+                
         }
 
 
@@ -115,10 +124,16 @@ public class Player : MonoBehaviour
 
             transform.Translate(direction * _speed * Time.deltaTime);
 
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift)&& _canThrust == true) 
             {
                 transform.Translate(direction * _shiftSpeed * Time.deltaTime);
+            _isThrusting = true;
+            
             }
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            _isThrusting = false;
+        }
 
 
 
@@ -148,13 +163,15 @@ public class Player : MonoBehaviour
 
         void FireLaser()
         {
+        
 
-
-            {
-                AmmoCount(-1);
+        {
+            
+            AmmoCount(-1);
                 _canFire = Time.time + _fireRate;
+            
 
-                if (_isTripleShotActive == true)
+            if (_isTripleShotActive == true)
                 {
                     Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
@@ -162,7 +179,8 @@ public class Player : MonoBehaviour
 
                 else
                 {
-                    Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+
+                Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
 
                 _audioSource.Play();
@@ -288,6 +306,65 @@ public class Player : MonoBehaviour
 
     }
 
+    public void LaserBeamActive()
+    {
+        _laserBeam.SetActive(true);
+        StartCoroutine(CoolDownLaserBeam());
+    }
+
+    IEnumerator CoolDownLaserBeam()
+    {
+        yield return new WaitForSeconds(5f);
+        _laserBeam.SetActive(false);
+    }
+
+    public void NegativeSpeed()
+    {
+        StartCoroutine(NegativeSpeedCoolDown());
+        _speed /= _speedMultiplier;
+        _shiftSpeed /= _speedMultiplier;
+    }
+
+    IEnumerator NegativeSpeedCoolDown()
+    {
+        yield return new WaitForSeconds(5);
+        _speed *= _speedMultiplier;
+        _shiftSpeed *= _speedMultiplier;
+    }
+
+    IEnumerator ThrustPower()
+    {
+        while (true)
+        {
+            yield return null;
+            if (_isThrusting == true)
+            {
+                _thrusterPower -= 15 * Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+            //Power goes down
+            if (_isThrusting == false)
+            {
+                _thrusterPower += 5 * Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+            //Power goes up
+
+            if (_thrusterPower <= 0)
+            {
+                _thrusterPower = 0;
+                _canThrust = false;
+                _isThrusting = false;
+            }
+            if(_thrusterPower >= 25 && _canThrust == false)
+            {
+                _canThrust = true;
+            }
+            _uiManager.ThrusterValue(_thrusterPower);
+
+
+        }
+    }
   
     
     
